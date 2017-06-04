@@ -12,6 +12,7 @@ RUN install_packages \
 						# manage all processes in the container, act as
 						# init script, has PID 1 and handles POSIX signals
 						supervisor \
+						python-setuptools \
 						# for automated security updates
 						unattended-upgrades \
 						# install the tool to rotate logs
