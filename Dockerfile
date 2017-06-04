@@ -23,7 +23,7 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 RUN /usr/bin/easy_install supervisor-stdout \
  && mkdir -p /var/log/supervisor \
  && mkdir -p /var/run/supervisor \
- && chmod 700 /etc/supervisor/supervisord.conf \
+ && chmod 700 /etc/supervisor/supervisord.conf
 
 # apt upgrade configuration
 COPY 02periodic /etc/apt/apt.conf.d/02periodic
