@@ -33,5 +33,5 @@ RUN curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/t
         && chmod +x /usr/bin/tini
         
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/bin/supervisord"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
