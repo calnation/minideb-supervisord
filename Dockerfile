@@ -1,6 +1,6 @@
 FROM bitnami/minideb:jessie
 
-ENV TINI_VERSION 0.14.0
+ENV TINI_VERSION 0.16.1
 
 
 # Enable https download of packages
@@ -28,10 +28,10 @@ RUN /usr/bin/easy_install supervisor-stdout \
 # apt upgrade configuration
 COPY 02periodic /etc/apt/apt.conf.d/02periodic
 
-# Use tini as subreaper to adopt zombie processes & manage graceful exit 
+# Use tini as subreaper to adopt zombie processes & manage graceful exit
 RUN curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static > /usr/bin/tini \
         && chmod +x /usr/bin/tini
-        
+
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

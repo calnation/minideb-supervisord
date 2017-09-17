@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  minideb-supervisord:
+    image: 'freecalifornia/minideb-supervisord'
+    volumes:
+      - './conf.d:/etc/supervisor/conf.d'
