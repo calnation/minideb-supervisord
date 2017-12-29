@@ -26,7 +26,7 @@ RUN install_packages \
 
 # configuring supervisor
 COPY config/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-COPY config/supervisor/cron.conf /etc/supervisor/supervisord.conf
+COPY config/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
 RUN /usr/bin/easy_install supervisor-stdout \
  && mkdir -p /var/log/supervisor \
  && mkdir -p /var/run/supervisor \
@@ -44,4 +44,4 @@ COPY config/02periodic /etc/apt/apt.conf.d/02periodic
 # Fix debian cron bug https://stackoverflow.com/a/38850273 
 RUN touch /etc/crontab /etc/cron.*/* && chown root:root -R /etc/cron.d/
 
-ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisor/supervisord.conf"]
