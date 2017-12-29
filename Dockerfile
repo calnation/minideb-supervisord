@@ -1,14 +1,15 @@
-FROM bitnami/minideb:jessie
-
-ENV TINI_VERSION 0.16.1
-
+FROM bitnami/minideb:stretch
 
 # Enable https download of packages
-RUN install_packages apt-transport-https ca-certificates
+RUN apt update -yqq \
+ && apt upgrade -yqq \
+ && install_packages apt-transport-https ca-certificates \
+ && update-ca-certificates
 
 # Basic Dependencies
 RUN install_packages \
 						curl \
+						#sudo git \
 						# manage all processes in the container, act as
 						# init script, has PID 1 and handles POSIX signals
 						supervisor \
@@ -16,22 +17,31 @@ RUN install_packages \
 						# for automated security updates
 						unattended-upgrades \
 						# install the tool to rotate logs
-						logrotate
+						logrotate \
+						# Adds envsubst command which inject env vars into files
+						envsubst \
+						# reliable syslog
+						rsyslog \
+ && service rsyslog start
 
 # configuring supervisor
-COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY config/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+COPY config/supervisor/cron.conf /etc/supervisor/supervisord.conf
 RUN /usr/bin/easy_install supervisor-stdout \
  && mkdir -p /var/log/supervisor \
  && mkdir -p /var/run/supervisor \
  && chmod 700 /etc/supervisor/supervisord.conf
 
+# configuring logrotate to run as cron job
+COPY config/cron/logrotate /etc/cron.d/logrotate
+
+# configuring logrotate on supervisor log files
+COPY config/logrotate/supervisord /etc/logrotate.d/supervisord
+
 # apt upgrade configuration
-COPY 02periodic /etc/apt/apt.conf.d/02periodic
+COPY config/02periodic /etc/apt/apt.conf.d/02periodic
 
-# Use tini as subreaper to adopt zombie processes & manage graceful exit
-RUN curl -L https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static > /usr/bin/tini \
-        && chmod +x /usr/bin/tini
+# Fix debian cron bug https://stackoverflow.com/a/38850273 
+RUN touch /etc/crontab /etc/cron.*/* && chown root:root -R /etc/cron.d/
 
-
-ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
