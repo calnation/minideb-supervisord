@@ -19,7 +19,7 @@ RUN install_packages \
 						# install the tool to rotate logs
 						logrotate \
 						# Adds envsubst command which inject env vars into files
-						envsubst \
+						gettext \
 						# reliable syslog
 						rsyslog \
  && service rsyslog start
